@@ -1,3 +1,6 @@
+// Carregar variáveis de ambiente
+require('dotenv').config();
+
 const fs = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -12,8 +15,8 @@ async function inicializarAdmin() {
     // Verificar se o arquivo já existe
     try {
       await fs.access(adminsPath);
-      console.log('Arquivo de administradores já existe. Pulando inicialização.');
-      return;
+      console.log('Arquivo de administradores já existe. Recriando com novas configurações...');
+      // Forçar recriação para usar novas variáveis de ambiente
     } catch (error) {
       // Arquivo não existe, continuar com a inicialização
     }
