@@ -15,10 +15,11 @@ async function inicializarAdmin() {
     // Verificar se o arquivo já existe
     try {
       await fs.access(adminsPath);
-      console.log('Arquivo de administradores já existe. Recriando com novas configurações...');
-      // Forçar recriação para usar novas variáveis de ambiente
+      console.log('Arquivo de administradores já existe. Pulando inicialização.');
+      return; // Não recriar se já existe
     } catch (error) {
       // Arquivo não existe, continuar com a inicialização
+      console.log('Arquivo de administradores não existe. Criando...');
     }
     
     // Criar senha criptografada
