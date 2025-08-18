@@ -3,7 +3,7 @@
 ## Descrição
 
 API REST desenvolvida em Node.js com Express para gerenciamento de reservas de restaurante. O sistema permite que usuários façam reservas e administradores gerenciem essas reservas.
-API criada com GenAI, para estudo de testes de software e criação do Projeto de Portifólio Pessoal da Mentoria 2.0 do Júlio de Lima.
+API criada com GenAI para estudo de testes de software, para Projeto de Portifólio Pessoal da Mentoria 2.0 do Júlio de Lima.
 
 ## Funcionalidades
 
@@ -327,3 +327,4 @@ cp backup_admins.json src/data/admins.json
 - **Faça backup** antes de modificações
 - **Os arquivos são criados** automaticamente se não existirem
 - **Formato JSON** deve ser mantido para funcionamento correto
+
