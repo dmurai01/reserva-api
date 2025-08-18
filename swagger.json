@@ -1,0 +1,952 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Reservas de Restaurante",
+    "version": "1.0.0",
+    "description": "API REST para gerenciamento de reservas de restaurante. O sistema permite que usuários façam reservas e administradores gerenciem essas reservas.",
+    "contact": {
+      "name": "Suporte API",
+      "email": "suporte@restaurante.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desenvolvimento"
+    },
+    {
+      "url": "https://api.restaurante.com",
+      "description": "Servidor de Produção"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtido através do login de administrador"
+      }
+    },
+    "schemas": {
+      "Reserva": {
+        "type": "object",
+        "required": [
+          "nome",
+          "cpf",
+          "celular",
+          "quantidadePessoas",
+          "data"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome completo do cliente",
+            "example": "João Silva",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF do cliente (apenas números)",
+            "example": "12345678901",
+            "pattern": "^[0-9]{11}$"
+          },
+          "celular": {
+            "type": "string",
+            "description": "Número de celular com DDD (apenas números)",
+            "example": "11987654321",
+            "pattern": "^[0-9]{10,11}$"
+          },
+          "quantidadePessoas": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4,
+            "description": "Quantidade de pessoas (1 a 4)",
+            "example": 2
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "description": "Data da reserva (YYYY-MM-DD)",
+            "example": "2024-01-15"
+          }
+        }
+      },
+      "Disponibilidade": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "Data formatada",
+            "example": "15/01/2024"
+          },
+          "dataISO": {
+            "type": "string",
+            "description": "Data no formato ISO",
+            "example": "2024-01-15"
+          },
+          "reservasExistentes": {
+            "type": "integer",
+            "description": "Número de reservas existentes",
+            "example": 2
+          },
+          "mesasDisponiveis": {
+            "type": "integer",
+            "description": "Número de mesas disponíveis",
+            "example": 3
+          },
+          "disponivel": {
+            "type": "boolean",
+            "description": "Se há mesas disponíveis",
+            "example": true
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Nome de usuário do administrador",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do administrador",
+            "example": "admin123"
+          }
+        }
+      },
+      "AdminReserva": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID único da reserva",
+            "example": 1703123456789
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome completo do cliente",
+            "example": "João Silva"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF formatado do cliente",
+            "example": "123.456.789-01"
+          },
+          "celular": {
+            "type": "string",
+            "description": "Número de celular",
+            "example": "11987654321"
+          },
+          "quantidadePessoas": {
+            "type": "integer",
+            "description": "Quantidade de pessoas",
+            "example": 2
+          },
+          "data": {
+            "type": "string",
+            "description": "Data formatada da reserva",
+            "example": "15/01/2024"
+          },
+          "dataISO": {
+            "type": "string",
+            "description": "Data no formato ISO",
+            "example": "2024-01-15"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data e hora de criação da reserva",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        }
+      },
+      "Estatisticas": {
+        "type": "object",
+        "properties": {
+          "totalReservas": {
+            "type": "integer",
+            "description": "Total de reservas ativas",
+            "example": 15
+          },
+          "reservasHoje": {
+            "type": "integer",
+            "description": "Reservas para hoje",
+            "example": 3
+          },
+          "datasComMaisReservas": {
+            "type": "array",
+            "description": "Datas com mais reservas",
+            "items": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "string",
+                  "example": "15/01/2024"
+                },
+                "total": {
+                  "type": "integer",
+                  "example": 5
+                }
+              }
+            }
+          },
+          "proximasDatas": {
+            "type": "array",
+            "description": "Próximas datas com reservas",
+            "items": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "string",
+                  "example": "15/01/2024"
+                },
+                "total": {
+                  "type": "integer",
+                  "example": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "Dados inválidos"
+          },
+          "errors": {
+            "type": "array",
+            "description": "Lista de erros de validação",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de sucesso",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "type": "object",
+            "description": "Dados da resposta"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Informações da API",
+        "description": "Retorna informações básicas sobre a API",
+        "tags": ["Informações"],
+        "responses": {
+          "200": {
+            "description": "Informações da API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "API de Reservas de Restaurante"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "documentation": {
+                      "type": "string",
+                      "example": "/api-docs"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservas": {
+      "post": {
+        "summary": "Criar uma nova reserva",
+        "description": "Cria uma nova reserva para o restaurante",
+        "tags": ["Reservas"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reserva"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reserva criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 1703123456789
+                            },
+                            "nome": {
+                              "type": "string",
+                              "example": "João Silva"
+                            },
+                            "cpf": {
+                              "type": "string",
+                              "example": "123.456.789-01"
+                            },
+                            "celular": {
+                              "type": "string",
+                              "example": "11987654321"
+                            },
+                            "quantidadePessoas": {
+                              "type": "integer",
+                              "example": 2
+                            },
+                            "data": {
+                              "type": "string",
+                              "example": "15/01/2024"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "CPF já possui reserva ativa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "CPF já possui uma reserva ativa"
+                    },
+                    "dataReserva": {
+                      "type": "string",
+                      "example": "15/01/2024"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Limite de reservas atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Limite de reservas para esta data foi atingido"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservas/disponibilidade": {
+      "get": {
+        "summary": "Verificar disponibilidade de datas",
+        "description": "Retorna a disponibilidade de mesas para as próximas datas",
+        "tags": ["Reservas"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "data",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data específica para verificar (opcional)",
+            "example": "2024-01-15"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disponibilidade retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/Disponibilidade"
+                            },
+                            {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/Disponibilidade"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservas/verificar/{cpf}": {
+      "get": {
+        "summary": "Verificar se CPF tem reserva ativa",
+        "description": "Verifica se um CPF específico possui uma reserva ativa",
+        "tags": ["Reservas"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cpf",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "CPF a ser verificado",
+            "example": "12345678901"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verificação realizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "temReserva": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "reserva": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "example": 1703123456789
+                                },
+                                "nome": {
+                                  "type": "string",
+                                  "example": "João Silva"
+                                },
+                                "cpf": {
+                                  "type": "string",
+                                  "example": "123.456.789-01"
+                                },
+                                "celular": {
+                                  "type": "string",
+                                  "example": "11987654321"
+                                },
+                                "quantidadePessoas": {
+                                  "type": "integer",
+                                  "example": 2
+                                },
+                                "data": {
+                                  "type": "string",
+                                  "example": "15/01/2024"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CPF inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/login": {
+      "post": {
+        "summary": "Login de administrador",
+        "description": "Realiza login de administrador e retorna token JWT",
+        "tags": ["Administrador"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "token": {
+                              "type": "string",
+                              "description": "Token JWT para autenticação",
+                              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                            },
+                            "admin": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "example": "admin"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário ou senha inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuário ou senha inválidos"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reservas": {
+      "get": {
+        "summary": "Listar todas as reservas",
+        "description": "Retorna todas as reservas ativas ordenadas por data",
+        "tags": ["Administrador"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de reservas retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "reservas": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/AdminReserva"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token não fornecido ou inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token de acesso não fornecido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Acesso negado. Apenas administradores podem acessar este recurso."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reservas/{data}": {
+      "get": {
+        "summary": "Listar reservas por data",
+        "description": "Retorna todas as reservas de uma data específica",
+        "tags": ["Administrador"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data das reservas (YYYY-MM-DD)",
+            "example": "2024-01-15"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservas da data retornadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "data": {
+                              "type": "string",
+                              "example": "15/01/2024"
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 3
+                            },
+                            "reservas": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/AdminReserva"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Data inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token não fornecido ou inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token de acesso não fornecido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Acesso negado. Apenas administradores podem acessar este recurso."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/estatisticas": {
+      "get": {
+        "summary": "Obter estatísticas das reservas",
+        "description": "Retorna estatísticas gerais das reservas",
+        "tags": ["Administrador"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estatísticas retornadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Success"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/Estatisticas"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token não fornecido ou inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token de acesso não fornecido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Acesso negado. Apenas administradores podem acessar este recurso."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Informações",
+      "description": "Endpoints de informações da API"
+    },
+    {
+      "name": "Reservas",
+      "description": "Endpoints públicos para gerenciamento de reservas"
+    },
+    {
+      "name": "Administrador",
+      "description": "Endpoints protegidos para administradores"
+    }
+  ]
+} 

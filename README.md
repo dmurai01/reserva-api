@@ -3,7 +3,7 @@
 ## Descrição
 
 API REST desenvolvida em Node.js com Express para gerenciamento de reservas de restaurante. O sistema permite que usuários façam reservas e administradores gerenciem essas reservas.
-API criada com GenAI, para 
+API criada com GenAI, para estudo de testes de software e criação do Projeto de Portifólio Pessoal da Mentoria 2.0 do Júlio de Lima.
 
 ## Funcionalidades
 
@@ -98,6 +98,7 @@ reserva-api/
 ├── .gitignore                      # Arquivos ignorados pelo Git
 ├── nodemon.json                    # Configuração do nodemon
 ├── package.json                    # Dependências e scripts
+├── swagger.json                    # Especificação OpenAPI/Swagger
 └── README.md                       # Documentação do projeto
 ```
 
@@ -119,6 +120,27 @@ reserva-api/
 A documentação completa da API está disponível através do Swagger UI:
 
 **URL da Documentação:** http://localhost:3000/api-docs
+
+### 📄 **Especificação OpenAPI**
+
+A especificação completa da API está disponível em formato JSON:
+
+**Arquivo:** `swagger.json`
+
+**Como usar:**
+- **Importar em ferramentas**: Postman, Insomnia, etc.
+- **Gerar clientes**: Para diferentes linguagens
+- **Validação**: De requisições e respostas
+- **Documentação**: Automática e interativa
+
+**Exemplo de uso:**
+```bash
+# Importar no Postman
+# 1. Abra o Postman
+# 2. Clique em "Import"
+# 3. Selecione o arquivo swagger.json
+# 4. Todas as rotas serão importadas automaticamente
+```
 
 ### Como usar a documentação:
 
@@ -305,12 +327,3 @@ cp backup_admins.json src/data/admins.json
 - **Faça backup** antes de modificações
 - **Os arquivos são criados** automaticamente se não existirem
 - **Formato JSON** deve ser mantido para funcionamento correto
-
-## Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
