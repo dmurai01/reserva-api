@@ -73,10 +73,11 @@ const listarReservas = async (req, res) => {
     const reservas = await garantirArquivoExiste('reservas.json', []);
     
     // Filtrar apenas reservas ativas (datas válidas)
-    const reservasAtivas = reservas.filter(r => validarData(r.data));
+    // const reservasAtivas = reservas.filter(r => validarData(r.data));
     
     // Formatar dados para exibição
-    const reservasFormatadas = reservasAtivas.map(r => ({
+    // const reservasFormatadas = reservasAtivas.map(r => ({
+    const reservasFormatadas = reservas.map(r => ({
       id: r.id,
       nome: r.nome,
       cpf: formatarCPF(r.cpf),
