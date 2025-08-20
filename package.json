@@ -4,6 +4,7 @@
   "description": "API REST para sistema de reservas de restaurante",
   "main": "src/server.js",
   "scripts": {
+    "test": "mocha ./test/**/*.test.js --timeout=200000",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "init": "node src/scripts/initAdmin.js"
@@ -30,6 +31,10 @@
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@faker-js/faker": "^9.9.0",
+    "chai": "^5.3.1",
+    "mocha": "^9.2.2",
+    "nodemon": "^3.0.2",
+    "supertest": "^7.1.4"
   }
 }
