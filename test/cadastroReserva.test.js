@@ -79,11 +79,36 @@ describe('Reservas', () => {
             expect(statusCadastro.status).to.equal(400)
             expect(statusCadastro.body.errors[0].msg).to.equal('Data é obrigatória')
         });
+    });
 
-        // it('Informando a data de reserva, deve retornar quantas mesas há disponível para reserva (US01 - CT10)', async () => {
-        //     const statusCadastro = await cadastrarNovaReserva(nomeCompleto, cpf, celular, quantidadedePessoas, '')
-        //     expect(statusCadastro.status).to.equal(400)
-        //     expect(statusCadastro.body.errors[0].msg).to.equal('Data é obrigatória')
-        // });
+    describe('GET /api/reservas/disponibilidade', () => {
+        it('Informando a data de reserva, deve retornar quantas mesas há disponível para reserva (US01 - CT10)', async () => {
+            const resposta = await request(process.env.BASE_URL)
+                .get('/api/reservas/disponibilidade')
+                .set('Content-type', 'application/json')
+                .send({
+                    'date': '2025-08-19'
+                })
+            expect(resposta.status).to.equal(200)
+            expect(resposta.body.data[0].reservasExistentes).is.a('number');
+            expect(resposta.body.data[0].mesasDisponiveis).is.a('number');
+        });
+        
+        it('Informando a data de reserva já cheia, deve retornar que está indisponível (US01 - CT11)', async () => {
+            let statusCadastro
+            dadosReserva = gerarDadosCadastro()
+            for (let i = 0; i < 6; i++) {
+                cpf = gerarCpfValido()
+                statusCadastro = await cadastrarNovaReserva(nomeCompleto, cpf, celular, quantidadedePessoas, dataFormatada)
+            }
+            const resposta = await request(process.env.BASE_URL)
+                .get('/api/reservas/disponibilidade')
+                .set('Content-type', 'application/json')
+                .send({
+                    'date': dataFormatada
+                })
+            expect(resposta.status).to.equal(200)
+            expect(resposta.body.data[0].disponivel).to.equal(false);
+        });
     });
 });
