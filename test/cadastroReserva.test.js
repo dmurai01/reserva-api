@@ -82,6 +82,10 @@ describe('Reservas', () => {
     });
 
     describe('GET /api/reservas/disponibilidade', () => {
+        beforeEach(() => {
+            dadosReserva = gerarDadosCadastro()
+        });
+
         it('Informando a data de reserva, deve retornar quantas mesas há disponível para reserva (US01 - CT10)', async () => {
             const resposta = await request(process.env.BASE_URL)
                 .get('/api/reservas/disponibilidade')
@@ -93,22 +97,18 @@ describe('Reservas', () => {
             expect(resposta.body.data[0].reservasExistentes).is.a('number');
             expect(resposta.body.data[0].mesasDisponiveis).is.a('number');
         });
-        
+
         it('Informando a data de reserva já cheia, deve retornar que está indisponível (US01 - CT11)', async () => {
-            let statusCadastro
-            dadosReserva = gerarDadosCadastro()
             for (let i = 0; i < 6; i++) {
                 cpf = gerarCpfValido()
                 statusCadastro = await cadastrarNovaReserva(nomeCompleto, cpf, celular, quantidadedePessoas, dataFormatada)
             }
             const resposta = await request(process.env.BASE_URL)
-                .get('/api/reservas/disponibilidade')
+                .get(`/api/reservas/disponibilidade?data=${dataFormatada}`)
                 .set('Content-type', 'application/json')
-                .send({
-                    'date': dataFormatada
-                })
+
             expect(resposta.status).to.equal(200)
-            expect(resposta.body.data[0].disponivel).to.equal(false);
+            expect(resposta.body.data.disponivel).to.be.false;
         });
     });
 });

@@ -4,7 +4,7 @@
   "description": "API REST para sistema de reservas de restaurante",
   "main": "src/server.js",
   "scripts": {
-    "test": "mocha ./test/**/*.test.js --timeout=200000",
+    "test": "mocha ./test/**/*.test.js --timeout=200000 --reporter mochawesome",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "init": "node src/scripts/initAdmin.js"
@@ -25,6 +25,7 @@
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mochawesome": "^7.1.3",
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.8",
