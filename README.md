@@ -62,9 +62,6 @@ npm run init
 
 5. Execute o projeto:
 ```bash
-# Desenvolvimento
-npm run dev
-
 # Produção
 npm start
 ```
@@ -118,46 +115,7 @@ reserva-api/
 ## Documentação
 
 A documentação completa da API está disponível através do Swagger UI:
-
 **URL da Documentação:** http://localhost:3000/api-docs
-
-### 📄 **Especificação OpenAPI**
-
-A especificação completa da API está disponível em formato JSON:
-
-**Arquivo:** `swagger.json`
-
-**Como usar:**
-- **Importar em ferramentas**: Postman, Insomnia, etc.
-- **Gerar clientes**: Para diferentes linguagens
-- **Validação**: De requisições e respostas
-- **Documentação**: Automática e interativa
-
-**Exemplo de uso:**
-```bash
-# Importar no Postman
-# 1. Abra o Postman
-# 2. Clique em "Import"
-# 3. Selecione o arquivo swagger.json
-# 4. Todas as rotas serão importadas automaticamente
-```
-
-### Como usar a documentação:
-
-1. **Acesse a URL**: http://localhost:3000/api-docs
-2. **Teste endpoints públicos**: Reservas podem ser testadas diretamente
-3. **Para endpoints protegidos**:
-   - Faça login primeiro em `POST /api/admin/login`
-   - Copie o token da resposta
-   - Clique no ícone de cadeado 🔒 no endpoint
-   - Cole o token (sem "Bearer")
-   - Clique em "Authorize"
-   - Agora você pode testar endpoints protegidos
-
-### Endpoints Protegidos:
-- `GET /api/admin/reservas` - Listar todas as reservas
-- `GET /api/admin/reservas/:data` - Listar reservas por data
-- `GET /api/admin/estatisticas` - Obter estatísticas
 
 ## Variáveis de Ambiente
 
@@ -185,61 +143,15 @@ NODE_ENV=development
 3. **Validação de CPF**: CPF deve ser válido
 4. **Quantidade de Pessoas**: Entre 1 e 4 pessoas por reserva
 5. **Datas**: Apenas datas atuais ou futuras
-6. **Campos Obrigatórios**: Nome, celular, quantidade de pessoas, data
+6. **Campos Obrigatórios**: Nome, cpf, celular, quantidade de pessoas, data
 7. **Criação Dinâmica**: Arquivos de dados são criados automaticamente na primeira reserva
 8. **Autenticação**: Endpoints de administrador requerem token JWT válido
 
-## Exemplo de Uso
-
-### Criar uma Reserva
-```bash
-curl -X POST http://localhost:3000/api/reservas \
-  -H "Content-Type: application/json" \
-  -d '{
-    "nome": "João Silva",
-    "cpf": "12345678901",
-    "celular": "11987654321",
-    "quantidadePessoas": 2,
-    "data": "2024-01-15"
-  }'
-```
-
-### Login de Administrador
-```bash
-curl -X POST http://localhost:3000/api/admin/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "admin",
-    "password": "admin123"
-  }'
-```
-
-## Status Codes
-
-- `200` - Sucesso
-- `201` - Criado com sucesso
-- `400` - Dados inválidos
-- `401` - Não autorizado
-- `403` - Acesso negado
-- `404` - Não encontrado
-- `409` - Conflito (CPF já tem reserva)
-- `422` - Limite de reservas atingido
-- `500` - Erro interno do servidor
 
 ## Scripts Disponíveis
 
 - `npm start` - Inicia o servidor em modo produção
-- `npm run dev` - Inicia o servidor em modo desenvolvimento com nodemon
 - `npm run init` - Inicializa o administrador padrão
-
-## Características Técnicas
-
-- **Criação Dinâmica de Arquivos**: Os arquivos `reservas.json` e `admins.json` são criados automaticamente
-- **Validação Robusta**: Validação de CPF, datas, e dados de entrada
-- **Autenticação JWT**: Sistema seguro de autenticação para administradores
-- **Documentação Swagger**: API documentada e testável via Swagger UI
-- **Configuração Flexível**: Variáveis de ambiente para diferentes ambientes
-- **Logs Detalhados**: Sistema de logging para monitoramento
 
 ## Arquivos de Dados
 
@@ -289,14 +201,6 @@ curl -X POST http://localhost:3000/api/admin/login \
 - ✅ **Hash seguro** para proteção
 - ✅ **Username único** por administrador
 
-### 🔧 **Gerenciamento dos Arquivos**
-
-#### **Criação Automática:**
-```bash
-# Primeira reserva criará automaticamente:
-# - src/data/reservas.json (se não existir)
-# - src/data/admins.json (se não existir)
-```
 
 #### **Inicialização Manual:**
 ```bash
@@ -311,20 +215,7 @@ src/data/
 └── admins.json      # Dados dos administradores
 ```
 
-#### **Backup e Restauração:**
-```bash
-# Backup dos dados
-cp src/data/reservas.json backup_reservas.json
-cp src/data/admins.json backup_admins.json
+#### **Testes Automatizados**
+Leia o arquivo `README-TEST.md` para mais informações sobre os testes automatizados.
 
-# Restaurar dados
-cp backup_reservas.json src/data/reservas.json
-cp backup_admins.json src/data/admins.json
-```
-
-### ⚠️ **Importante:**
-- **Não edite manualmente** os arquivos durante a execução
-- **Faça backup** antes de modificações
-- **Os arquivos são criados** automaticamente se não existirem
-- **Formato JSON** deve ser mantido para funcionamento correto
 

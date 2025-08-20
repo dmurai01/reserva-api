@@ -67,3 +67,6 @@ Thumbs.db
 
 # Data
 src/data/
+
+# Mochawesome
+/mochawesome-report
