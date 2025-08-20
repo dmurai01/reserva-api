@@ -8,7 +8,7 @@ const gerarDadosCadastro = () => {
         nomeCompleto = `${nome} ${sobrenome}`
         cpf = `${novoCpf}`
         celular = '11999996666'
-        quantidadedePessoas = 2
+        quantidadedePessoas = Math.floor(Math.random() * 4) + 1
         data = faker.date.future()
         dataFormatada = data.toISOString().split('T')[0];
 }
