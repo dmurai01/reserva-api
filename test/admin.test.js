@@ -37,7 +37,14 @@ describe('Administrador', () => {
             expect(resposta.body.message).to.equal('Token inválido')
         });
 
-        it('Validar se pesquisa reservas por data retorna dados corretos (US02 - CT03)', async () => {
+        it('Validar se pesquisa reservas por data >= hoje deve retornar dados corretos (US02 - CT03)', async () => {
+            const resposta = await reservas(token, '2026-08-20')
+            expect(resposta.status).to.equal(200)
+            expect(resposta.body.success).to.be.true
+            expect(resposta.body.data.data).to.equal('20/08/2026');
+        });
+
+        it('Validar se pesquisa reservas por data passada deve retornar dados corretos (US02 - CT03-A)', async () => {
             const resposta = await reservas(token, '2025-08-20')
             expect(resposta.status).to.equal(200)
             expect(resposta.body.success).to.be.true

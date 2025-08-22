@@ -218,4 +218,7 @@ src/data/
 #### **Testes Automatizados**
 Leia o arquivo `README-TEST.md` para mais informações sobre os testes automatizados.
 
+#### **Documentações do Projeto**
+ -Acesse: `https://github.com/dmurai01/reserva-api/wiki/Documenta%C3%A7%C3%A3o-do-Projeto`
+
 
